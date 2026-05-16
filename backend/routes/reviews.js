@@ -20,7 +20,18 @@ router.get('/', async (req, res) => {
 });
 
 // Public: Submit review (with optional video)
-router.post('/', uploadVideo.single('video'), async (req, res) => {
+router.post('/', (req, res, next) => {
+  uploadVideo.single('video')(req, res, function (err) {
+    if (err instanceof multer.MulterError) {
+      return res.status(400).json({ error: err.message });
+    } else if (err) {
+      return res.status(500).json({ error: err.message });
+    }
+    next();
+  });
+}, async (req, res) => {
+  console.log(req.body);
+console.log(req.file);
   try {
     const { name, email, review, rating } = req.body;
     if (!name || !email || !review || !rating) {
