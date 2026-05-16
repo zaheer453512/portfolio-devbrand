@@ -3,11 +3,6 @@ const nextConfig = {
   images: {
     domains: ['res.cloudinary.com'],
   },
-  env: {
-    NEXT_PUBLIC_API_URL: process.env.NEXT_PUBLIC_API_URL,
-    NEXT_PUBLIC_WHATSAPP: process.env.NEXT_PUBLIC_WHATSAPP,
-    NEXT_PUBLIC_EMAIL: process.env.NEXT_PUBLIC_EMAIL,
-  },
 };
 
 module.exports = nextConfig;
