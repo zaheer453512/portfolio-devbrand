@@ -54,8 +54,14 @@ console.log(req.file);
     const newReview = new Review(reviewData);
     await newReview.save();
     res.status(201).json({ message: 'Review submitted successfully', review: newReview });
-  } catch (error) {
-    res.status(500).json({ error: error.message });
+  }   catch (error) {
+    console.log("FULL ERROR:", error);
+    console.log("ERROR MESSAGE:", error.message);
+
+    res.status(500).json({
+      error: error.message,
+      full: JSON.stringify(error, null, 2)
+    });
   }
 });
 
