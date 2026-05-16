@@ -5,6 +5,7 @@ const { uploadVideo, cloudinary } = require('../config/cloudinary');
 const multer = require('multer');
 const router = express.Router();
 
+
 // Public: Get approved reviews
 router.get('/', async (req, res) => {
   try {
@@ -15,10 +16,10 @@ router.get('/', async (req, res) => {
     const reviews = await Review.find(filter).sort({ pinned: -1, createdAt: -1 });
     res.json(reviews);
   } catch (error) {
-    res.status(500).json({ error: error.message });
-  }
+  console.error(error);
+  res.status(500).json({ error: error.message });
+}
 });
-
 // Public: Submit review (with optional video)
 router.post('/', (req, res, next) => {
   uploadVideo.single('video')(req, res, function (err) {
