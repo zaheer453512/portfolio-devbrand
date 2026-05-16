@@ -13,7 +13,7 @@ const mediaRoutes = require('./routes/media');
 const contentRoutes = require('./routes/content');
 
 const app = express();
-
+app.set('trust proxy', 1);
 // Connect to MongoDB
 connectDB();
 
