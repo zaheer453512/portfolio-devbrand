@@ -21,21 +21,21 @@ const imageStorage = new CloudinaryStorage({
 // Video storage
 const videoStorage = new CloudinaryStorage({
   cloudinary,
-  params: {
+  params: async (req, file) => ({
     folder: 'portfolio/videos',
     resource_type: 'video',
     allowed_formats: ['mp4', 'webm'],
-  },
+  }),
 });
 
 const uploadImage = multer({
   storage: imageStorage,
-  limits: { fileSize: 5 * 1024 * 1024 }, // 10MB
+  limits: { fileSize: 5 * 1024 * 1024 }, // 5MB
 });
 
 const uploadVideo = multer({
   storage: videoStorage,
-  limits: { fileSize: 20 * 1024 * 1024 }, // 100MB
+  limits: { fileSize: 100 * 1024 * 1024 }, // 100MB
 });
 
 module.exports = { cloudinary, uploadImage, uploadVideo };
