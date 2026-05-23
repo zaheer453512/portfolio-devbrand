@@ -5,7 +5,7 @@ const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000/api';
 
 const api = axios.create({
   baseURL: API_URL,
-  timeout: 30000,
+  timeout: 60000, // 60 seconds (was 30s — too short for file uploads)
 });
 
 // Add auth token to admin requests
@@ -37,10 +37,12 @@ export const projectsApi = {
   getAllAdmin: () => api.get('/projects/admin/all'),
   getOne: (id: string) => api.get(`/projects/${id}`),
   create: (formData: FormData) => api.post('/projects', formData, {
-    headers: { 'Content-Type': 'multipart/form-data' }
+    headers: { 'Content-Type': 'multipart/form-data' },
+    timeout: 120000, // 2 min for image + data upload
   }),
   update: (id: string, formData: FormData) => api.put(`/projects/${id}`, formData, {
-    headers: { 'Content-Type': 'multipart/form-data' }
+    headers: { 'Content-Type': 'multipart/form-data' },
+    timeout: 120000,
   }),
   delete: (id: string) => api.delete(`/projects/${id}`),
 };
@@ -50,7 +52,8 @@ export const reviewsApi = {
   getAll: () => api.get('/reviews'),
   getAllAdmin: (status?: string) => api.get(`/reviews/admin/all${status ? `?status=${status}` : ''}`),
   submit: (formData: FormData) => api.post('/reviews', formData, {
-    headers: { 'Content-Type': 'multipart/form-data' }
+    headers: { 'Content-Type': 'multipart/form-data' },
+    timeout: 300000, // 5 min — allows large video uploads
   }),
   updateStatus: (id: string, status: string) => api.patch(`/reviews/${id}/status`, { status }),
   feature: (id: string, data: object) => api.patch(`/reviews/${id}/feature`, data),

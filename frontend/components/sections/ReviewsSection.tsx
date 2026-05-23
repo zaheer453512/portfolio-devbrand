@@ -253,23 +253,24 @@ export default function ReviewsSection() {
 
               <div>
                 <label className="block text-xs font-mono text-gray-500 mb-2 uppercase tracking-wider">Video Testimonial (Optional)</label>
-                <div className="border border-dashed border-[#333] p-6 text-center hover:border-primary transition-colors cursor-pointer">
-                  <input
-                    type="file"
-                    accept="video/*"
-                    id="video-upload"
-                    className="hidden"
-                    onChange={(e) => setVideoFile(e.target.files?.[0] || null)}
-                  />
-                  <label htmlFor="video-upload" className="cursor-pointer">
-                    <svg className="mx-auto mb-2 text-gray-600" width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5">
-                      <polygon points="23 7 16 12 23 17 23 7"/>
-                      <rect x="1" y="5" width="15" height="14"/>
-                    </svg>
-                    <p className="text-sm text-gray-500">
-                      {videoFile ? videoFile.name : 'Click to upload video (MP4, WebM — max 100MB)'}
-                    </p>
-                  </label>
+                <input
+                  type="file"
+                  accept="video/mp4,video/webm,video/*"
+                  id="video-upload"
+                  className="hidden"
+                  onChange={(e) => setVideoFile(e.target.files?.[0] || null)}
+                />
+                <div
+                  className="border border-dashed border-[#333] p-6 text-center hover:border-primary transition-colors cursor-pointer"
+                  onClick={() => document.getElementById('video-upload')?.click()}
+                >
+                  <svg className="mx-auto mb-2 text-gray-600" width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5">
+                    <polygon points="23 7 16 12 23 17 23 7"/>
+                    <rect x="1" y="5" width="15" height="14"/>
+                  </svg>
+                  <p className="text-sm text-gray-500">
+                    {videoFile ? videoFile.name : 'Click to upload video (MP4, WebM — max 100MB)'}
+                  </p>
                 </div>
               </div>
 
