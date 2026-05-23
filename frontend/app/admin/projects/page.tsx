@@ -34,6 +34,7 @@ export default function AdminProjects() {
   const [form, setForm] = useState(emptyForm);
   const [thumbnail, setThumbnail] = useState<File | null>(null);
   const [submitting, setSubmitting] = useState(false);
+  const [uploadProgress, setUploadProgress] = useState(0);
   const [deleteConfirm, setDeleteConfirm] = useState<string | null>(null);
   const fileRef = useRef<HTMLInputElement>(null);
 
@@ -71,7 +72,10 @@ export default function AdminProjects() {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!form.title) return toast.error('Title is required');
+    if (!form.description) return toast.error('Full Description is required');
+    
     setSubmitting(true);
+    setUploadProgress(0);
     try {
       const fd = new FormData();
       const data = {
@@ -82,13 +86,22 @@ export default function AdminProjects() {
       if (thumbnail) fd.append('thumbnail', thumbnail);
 
       if (editing) {
-        await projectsApi.update(editing._id, fd);
+        await projectsApi.update(editing._id, fd, (progressEvent) => {
+          if (progressEvent.total) {
+            setUploadProgress(Math.round((progressEvent.loaded * 100) / progressEvent.total));
+          }
+        });
         toast.success('Project updated!');
       } else {
-        await projectsApi.create(fd);
+        await projectsApi.create(fd, (progressEvent) => {
+          if (progressEvent.total) {
+            setUploadProgress(Math.round((progressEvent.loaded * 100) / progressEvent.total));
+          }
+        });
         toast.success('Project created!');
       }
       setShowModal(false);
+      setUploadProgress(0);
       load();
     } catch {
       toast.error('Failed to save project');
@@ -325,11 +338,27 @@ export default function AdminProjects() {
                   <label htmlFor="featured" className="text-sm text-gray-400">Mark as Featured Project</label>
                 </div>
 
-                <div className="flex gap-3 pt-2">
-                  <button type="submit" disabled={submitting} className="btn btn-primary">
-                    {submitting ? 'Saving...' : editing ? 'Update Project' : 'Create Project'}
-                  </button>
-                  <button type="button" onClick={() => setShowModal(false)} className="btn btn-ghost">Cancel</button>
+                <div className="flex flex-col gap-3 pt-2">
+                  <div className="flex gap-3">
+                    <button type="submit" disabled={submitting} className="btn btn-primary">
+                      {submitting ? 'Saving...' : editing ? 'Update Project' : 'Create Project'}
+                    </button>
+                    <button type="button" onClick={() => setShowModal(false)} className="btn btn-ghost">Cancel</button>
+                  </div>
+                  
+                  {submitting && uploadProgress > 0 && (
+                    <div>
+                      <div className="w-full bg-[#1a1a1a] h-2 rounded overflow-hidden">
+                        <div 
+                          className="bg-primary h-full transition-all duration-300"
+                          style={{ width: `${uploadProgress}%` }}
+                        />
+                      </div>
+                      <div className="text-xs text-gray-500 font-mono mt-1 text-right">
+                        {uploadProgress}% Uploaded
+                      </div>
+                    </div>
+                  )}
                 </div>
               </form>
             </motion.div>

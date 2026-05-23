@@ -50,6 +50,7 @@ export default function ReviewsSection() {
   const [currentIndex, setCurrentIndex] = useState(0);
   const [showForm, setShowForm] = useState(false);
   const [submitting, setSubmitting] = useState(false);
+  const [uploadProgress, setUploadProgress] = useState(0);
   const [form, setForm] = useState({ name: '', email: '', review: '', rating: 0 });
   const [videoFile, setVideoFile] = useState<File | null>(null);
   const { ref, inView } = useInView({ threshold: 0.1, triggerOnce: true });
@@ -85,6 +86,7 @@ export default function ReviewsSection() {
     }
 
     setSubmitting(true);
+    setUploadProgress(0);
     const fd = new FormData();
     fd.append('name', form.name);
     fd.append('email', form.email);
@@ -93,10 +95,16 @@ export default function ReviewsSection() {
     if (videoFile) fd.append('video', videoFile);
 
     try {
-      await reviewsApi.submit(fd);
+      await reviewsApi.submit(fd, (progressEvent) => {
+        if (progressEvent.total) {
+          const percentCompleted = Math.round((progressEvent.loaded * 100) / progressEvent.total);
+          setUploadProgress(percentCompleted);
+        }
+      });
       toast.success('Review submitted! It will appear after approval.');
       setForm({ name: '', email: '', review: '', rating: 0 });
       setVideoFile(null);
+      setUploadProgress(0);
       setShowForm(false);
     } catch {
       toast.error('Failed to submit review. Please try again.');
@@ -274,21 +282,37 @@ export default function ReviewsSection() {
                 </div>
               </div>
 
-              <div className="flex gap-4">
-                <button
-                  type="submit"
-                  disabled={submitting}
-                  className="btn btn-primary"
-                >
-                  {submitting ? 'Submitting...' : 'Submit Review'}
-                </button>
-                <button
-                  type="button"
-                  onClick={() => setShowForm(false)}
-                  className="btn btn-ghost"
-                >
-                  Cancel
-                </button>
+              <div className="flex flex-col gap-4">
+                <div className="flex gap-4">
+                  <button
+                    type="submit"
+                    disabled={submitting}
+                    className="btn btn-primary"
+                  >
+                    {submitting ? 'Uploading...' : 'Submit Review'}
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => setShowForm(false)}
+                    className="btn btn-ghost"
+                  >
+                    Cancel
+                  </button>
+                </div>
+
+                {submitting && uploadProgress > 0 && (
+                  <div>
+                    <div className="w-full bg-[#1a1a1a] h-2 rounded overflow-hidden">
+                      <div 
+                        className="bg-primary h-full transition-all duration-300"
+                        style={{ width: `${uploadProgress}%` }}
+                      />
+                    </div>
+                    <div className="text-xs text-gray-500 font-mono mt-1 text-right">
+                      {uploadProgress}% Uploaded
+                    </div>
+                  </div>
+                )}
               </div>
             </form>
           </motion.div>

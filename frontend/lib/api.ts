@@ -36,13 +36,15 @@ export const projectsApi = {
   getAll: () => api.get('/projects'),
   getAllAdmin: () => api.get('/projects/admin/all'),
   getOne: (id: string) => api.get(`/projects/${id}`),
-  create: (formData: FormData) => api.post('/projects', formData, {
+  create: (formData: FormData, onUploadProgress?: (progressEvent: any) => void) => api.post('/projects', formData, {
     headers: { 'Content-Type': 'multipart/form-data' },
     timeout: 120000, // 2 min for image + data upload
+    onUploadProgress
   }),
-  update: (id: string, formData: FormData) => api.put(`/projects/${id}`, formData, {
+  update: (id: string, formData: FormData, onUploadProgress?: (progressEvent: any) => void) => api.put(`/projects/${id}`, formData, {
     headers: { 'Content-Type': 'multipart/form-data' },
     timeout: 120000,
+    onUploadProgress
   }),
   delete: (id: string) => api.delete(`/projects/${id}`),
 };
@@ -51,9 +53,10 @@ export const projectsApi = {
 export const reviewsApi = {
   getAll: () => api.get('/reviews'),
   getAllAdmin: (status?: string) => api.get(`/reviews/admin/all${status ? `?status=${status}` : ''}`),
-  submit: (formData: FormData) => api.post('/reviews', formData, {
+  submit: (formData: FormData, onUploadProgress?: (progressEvent: any) => void) => api.post('/reviews', formData, {
     headers: { 'Content-Type': 'multipart/form-data' },
     timeout: 300000, // 5 min — allows large video uploads
+    onUploadProgress
   }),
   updateStatus: (id: string, status: string) => api.patch(`/reviews/${id}/status`, { status }),
   feature: (id: string, data: object) => api.patch(`/reviews/${id}/feature`, data),
