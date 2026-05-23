@@ -41,7 +41,15 @@ router.get('/:id', async (req, res) => {
 });
 
 // Admin: Create project
-router.post('/', authMiddleware, uploadImage.single('thumbnail'), async (req, res) => {
+router.post('/', authMiddleware, (req, res, next) => {
+  uploadImage.single('thumbnail')(req, res, function (err) {
+    if (err) {
+      console.error("Multer error during project creation:", err);
+      return res.status(500).json({ error: err.message || err.toString() });
+    }
+    next();
+  });
+}, async (req, res) => {
   try {
     const data = JSON.parse(req.body.data || '{}');
     if (req.file) {
@@ -56,7 +64,15 @@ router.post('/', authMiddleware, uploadImage.single('thumbnail'), async (req, re
 });
 
 // Admin: Update project
-router.put('/:id', authMiddleware, uploadImage.single('thumbnail'), async (req, res) => {
+router.put('/:id', authMiddleware, (req, res, next) => {
+  uploadImage.single('thumbnail')(req, res, function (err) {
+    if (err) {
+      console.error("Multer error during project update:", err);
+      return res.status(500).json({ error: err.message || err.toString() });
+    }
+    next();
+  });
+}, async (req, res) => {
   try {
     const data = typeof req.body.data === 'string' ? JSON.parse(req.body.data) : req.body;
     if (req.file) {

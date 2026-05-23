@@ -55,9 +55,9 @@ app.get('/api/health', (req, res) => {
 
 // Global error handler
 app.use((err, req, res, next) => {
-  console.error(err.stack);
+  console.error('Global Error Handler caught:', err);
   res.status(err.status || 500).json({
-    error: err.message || 'Internal Server Error',
+    error: err.message || err.toString() || 'Internal Server Error',
     ...(process.env.NODE_ENV === 'development' && { stack: err.stack })
   });
 });

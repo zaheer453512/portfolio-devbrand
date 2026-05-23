@@ -11,11 +11,11 @@ cloudinary.config({
 // Image storage
 const imageStorage = new CloudinaryStorage({
   cloudinary,
-  params: {
+  params: async (req, file) => ({
     folder: 'portfolio/images',
     allowed_formats: ['jpg', 'jpeg', 'png', 'webp', 'gif'],
     transformation: [{ quality: 'auto', fetch_format: 'auto' }],
-  },
+  }),
 });
 
 // Video storage
